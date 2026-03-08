@@ -1,13 +1,9 @@
-// app/layout.tsx
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
-
 export const metadata: Metadata = {
-  title: "Indosawit.Net | Pusat Asupan Kabar Terkini",
-  description: "Aggregator berita modern besutan Rahmat (rAi-engine) menggunakan API NexRay.",
+  title: "IndoSawit.news | Pusat Asupan Kabar Terkini",
+  description: "Aggregator berita modern besutan Rahmat (rAi-engine).",
 };
 
 export default function RootLayout({
@@ -17,9 +13,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="id">
-      <body className={`${inter.className} bg-[#0B0F19] antialiased`}>
+      <body className="antialiased font-sans text-white bg-[#050705]">
         {children}
       </body>
     </html>
   );
-}
+                                   }
