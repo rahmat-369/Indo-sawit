@@ -1,12 +1,33 @@
-// Posisi baru: app/page.tsx
+// app/page.tsx
 import DevCorner from "@/components/DevCorner";
 import NewsCard from "@/components/NewsCard";
 
 async function getNews() {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-  const res = await fetch(`${baseUrl}/api/news`, { cache: 'no-store' });
-  if (!res.ok) return [];
-  return res.json();
+  // Masalah utama: Vercel Serverless Function tidak bisa memanggil dirinya sendiri 
+  // via localhost atau URL relatif saat proses render server-side.
+  
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  
+  // Jika URL tidak ada, kita return array kosong agar web tidak crash
+  if (!baseUrl) {
+    console.error("NEXT_PUBLIC_SITE_URL belum diatur di Environment Variables Vercel");
+    return [];
+  }
+
+  try {
+    const res = await fetch(`${baseUrl}/api/news`, { 
+      cache: 'no-store',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+    
+    if (!res.ok) return [];
+    return res.json();
+  } catch (error) {
+    console.error("Gagal ambil berita:", error);
+    return [];
+  }
 }
 
 export default async function Home() {
@@ -31,13 +52,21 @@ export default async function Home() {
       <div className="max-w-7xl mx-auto px-6 mt-10 grid grid-cols-1 lg:grid-cols-4 gap-8">
         <div className="lg:col-span-3">
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {newsList.map((news: any, idx: number) => (
-              <NewsCard key={idx} news={news} />
-            ))}
+            {newsList && newsList.length > 0 ? (
+              newsList.map((news: any, idx: number) => (
+                <NewsCard key={idx} news={news} />
+              ))
+            ) : (
+              <div className="col-span-full p-10 border border-dashed border-white/10 rounded-2xl text-center text-gray-500">
+                Belum ada setoran berita. Coba refresh bentar 🗿
+              </div>
+            )}
           </div>
         </div>
-        <aside><DevCorner /></aside>
+        <aside>
+          <DevCorner />
+        </aside>
       </div>
     </main>
   );
-    }
+}
